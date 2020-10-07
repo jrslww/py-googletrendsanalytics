@@ -1,58 +1,32 @@
-from pytrends.request import TrendReq
 import pandas as pd
-from tkinter import *
-import os
+from pytrends.request import TrendReq
+import tkinter
+top = tkinter.Tk()
+#Code for access to Google from China
+#from pytrends.request import TrendReq
+#pytrends = TrendReq(hl='en-US', tz=360, timeout=(10,25), proxies=['https://34.203.233.13:80',], retries=2, backoff_factor=0.1)
 
-# create class
-class MyKeywordApp():
-    def __init__(self):
+pytrend = TrenёdReq(hl='en-US', tz=360)
+n = int(input('Enter a number of tendencies: '))
+keywords = []
+print("Enter tendencies: ")
+for i in range(0, n):
+     tend = input()
+     keywords.append(tend)
+pytrend.build_payload(
+     kw_list=keywords,
+     cat=0,
+     timeframe='today 3-m',
+     geo='PL',
+     gprop='')
+data = pytrend.interest_over_time()
+data.to_csv('Py_VS_R.csv', encoding='utf_8_sig')
 
-        self.newWindow()
+data = data.drop(labels=['isPartial'],axis='columns')
+data.to_csv('Py_VS_R.csv', encoding='utf_8_sig')
 
-    def newWindow(self):
-        # define your window
-        root = Tk()
-        root.geometry("400x100")
-        root.resizable(False, False)
-        root.title("Keyword Application")
+image = data.plot(title = (" vs. ".join(keywords)) + ' in last 3 months on Google Trends')
+fig = image.get_figure()
+fig.savefig('figure.png')
 
-        # add logo image
-        p1 = PhotoImage(file='logo_image.png')
-        root.iconphoto(False, p1)
-
-        # add labels
-        label1 = Label(text='Input a Keyword')
-        label1.pack()
-        canvas1 = Canvas(root)
-        canvas1.pack()
-        entry1 = Entry(root)
-        canvas1.create_window(200, 20, window=entry1)
-
-        def excelWriter():
-            # get the user-input variable
-            x1 = entry1.get()
-            canvas1.create_window(200, 210)
-
-            # get our Google Trends data
-            pytrend = TrendReq()
-            kws = pytrend.suggestions(keyword=x1)
-            df = pd.DataFrame(kws)
-            df = df.drop(columns='mid')
-
-            # create excel writer object
-            writer = pd.ExcelWriter('keywords.xlsx')
-            df.to_excel(writer)
-            writer.save()
-
-            # open your excel file
-            os.system("keywords.xlsx")
-            print(df)
-
-        # add button and run loop
-        button1 = Button(canvas1, text='Run Report', command=excelWriter)
-        canvas1.create_window(200, 50, window=button1)
-        root.mainloop()
-
-# call class
-MyKeywordApp()
-
+top.mainloop()
